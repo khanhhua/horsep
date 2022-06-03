@@ -1,0 +1,14 @@
+on:
+  pull_request:
+
+jobs:
+  unit-test:
+    name: Unit Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-haskell@v1.1
+        with:
+          ghc-version: '8.10.7' # Resolves to the latest point release of GHC 8.8
+          cabal-version: '3.6.2.0' # Exact version of Cabal
+      - run: cabal v2-run horsep-test
