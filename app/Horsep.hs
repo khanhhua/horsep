@@ -1,4 +1,5 @@
 {-# LANGUAGE RankNTypes #-}
+{-# LANGUAGE TupleSections #-}
 module Horsep where
 import Data.Maybe
 import Control.Applicative
@@ -10,6 +11,7 @@ data Morse
   | MorseSpace
   | MorseChar Char
   | MorseInt Int
+  | MorseEof
   deriving (Show, Eq)
 
 newtype Parser a =
@@ -25,7 +27,7 @@ instance Functor Parser where
       Just morseM -> (Just $ f morseM, str)
 
 instance Applicative Parser where
-  pure a = Parse $ const (Just a, "")
+  pure x = Parse (Just x, )
   (Parse p1) <*> (Parse p2) = Parse $ \s ->
     let
       (f, xs1)   = p1 s
@@ -33,15 +35,24 @@ instance Applicative Parser where
     in (f <*> m, xs2)
 
 instance Alternative Parser where
-  empty = Parse undefined
-  (Parse p1) <|> (Parse p2) = Parse $ \(x:xs) ->
+  empty = Parse f
+    where
+      f (_:xs) = (Nothing, xs)
+      f _ = (Nothing, "")
+  (Parse p1) <|> (Parse p2) = Parse $ \s ->
     let
-      (m1, xs1) = p1 (x:xs)
-      (m2, xs2) = p2 (x:xs)
-    in (m1 <|> m2, xs)
+      (m1, xs1) = p1 s
+      (m2, xs2) = p2 s
+    in (m1 <|> m2, xs1)
 
 type MorseParser = Parser Morse
 
+
+decodeEof :: MorseParser
+decodeEof = Parse f
+  where
+    f [] = (Just MorseEof, "")
+    f (_:xs) = (Nothing, xs)
 
 decodeDot :: MorseParser
 decodeDot = Parse f
@@ -65,7 +76,11 @@ decodeSpace = Parse f
     f (_:xs) = (Nothing, xs)
 
 decodeToken :: MorseParser
-decodeToken = decodeDot <|> decodeDash <|> decodeSpace
+decodeToken = decodeDot <|> decodeDash
 
-decodeLetter :: MorseParser
-decodeLetter = undefined
+decodeLetter ::MorseParser
+decodeLetter = many decodeToken <* decodeEof
+  -- where
+  --   f _a = Nothing
+    -- f [MorseDot, MorseDash] = MorseChar 'A'
+    -- f [] = MorseSpace

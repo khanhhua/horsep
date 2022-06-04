@@ -12,7 +12,15 @@ main =
     describe "Parse token" $ do
       it "Parse token '.'" $ do run decodeToken ". " @?= (Just MorseDot, " ")
       it "Parse token '-'" $ do run decodeToken "- " @?= (Just MorseDash, " ")
-      it "Parse token ' '" $ do run decodeToken "  " @?= (Just MorseSpace, " ")
-    -- describe "Parse characters" $ do
-    --   it "Parse ." $ do
-    --       run decodeLetter "." @?= (Just $ MorseChar 'i', "")
+
+    describe "Parse characters" $ do
+      it "Parse .-" $ do
+        run decodeLetter ".-" @?= (Just $ MorseChar 'A', "")
+      it "Parse -..." $ do
+        run decodeLetter "-..." @?= (Just $ MorseChar 'B', "")
+      it "Parse -.-." $ do
+        run decodeLetter "-.-." @?= (Just $ MorseChar 'C', "")
+      it "Parse --." $ do
+        run decodeLetter "--." @?= (Just $ MorseChar 'D', "")
+      it "Parse ." $ do
+        run decodeLetter "." @?= (Just $ MorseChar 'E', "")
