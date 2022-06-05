@@ -26,3 +26,8 @@ main =
         run decodeLetter "-.." @?= Just (MorseChar 'D', "")
       it "Parse ." $ do
         run decodeLetter "." @?= Just (MorseChar 'E', "")
+      it "Parse ..-." $ do
+        run decodeLetter "..-." @?= Just (MorseChar 'F', "")
+    -- describe "Parse unhappy cases" $ do
+    --   it "Parse invalid series of token" $ do
+    --     run decodeLetter "........" @?= Just Nothing

@@ -80,4 +80,5 @@ decodeLetter = f <$> many decodeToken <* decodeEof
     f [MorseDash, MorseDot, MorseDash, MorseDot] = MorseChar 'C'
     f [MorseDash, MorseDot, MorseDot] = MorseChar 'D'
     f [MorseDot] = MorseChar 'E'
+    f [MorseDot, MorseDot, MorseDash, MorseDot] = MorseChar 'F'
     f _ = MorseEmpty
