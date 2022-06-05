@@ -11,10 +11,13 @@ data Morse
   = MorseDot
   | MorseDash
   | MorseSpace
-  | MorseChar Char
-  | MorseInt Int
   | MorseEof
-  | MorseEmpty
+  deriving (Show, Eq)
+
+data MorseAlphabet
+  = MorseChar Char
+  | MorseInt Int
+  | MorseInvalid
   deriving (Show, Eq)
 
 newtype Parser a =
@@ -40,6 +43,8 @@ instance Alternative Parser where
     p1 s <|> p2 s
 
 type MorseParser = Parser Morse
+
+type AlphabetParser = Parser MorseAlphabet
 
 
 decodeEof :: MorseParser
@@ -72,8 +77,8 @@ decodeSpace = Parse f
 decodeToken :: MorseParser
 decodeToken = decodeDot <|> decodeDash
 
-decodeLetter :: MorseParser
-decodeLetter = f <$> many decodeToken <* decodeEof
+decodeLetter :: AlphabetParser
+decodeLetter = f <$> many decodeToken <* (decodeEof <|> decodeSpace)
   where
     f [MorseDot, MorseDash] = MorseChar 'A'
     f [MorseDash, MorseDot, MorseDot, MorseDot] = MorseChar 'B'
@@ -81,4 +86,36 @@ decodeLetter = f <$> many decodeToken <* decodeEof
     f [MorseDash, MorseDot, MorseDot] = MorseChar 'D'
     f [MorseDot] = MorseChar 'E'
     f [MorseDot, MorseDot, MorseDash, MorseDot] = MorseChar 'F'
-    f _ = MorseEmpty
+    f [MorseDash, MorseDash, MorseDot] = MorseChar 'G'
+    f [MorseDot, MorseDot, MorseDot, MorseDot] = MorseChar 'H'
+    f [MorseDot, MorseDot] = MorseChar 'I'
+    f [MorseDot, MorseDash, MorseDash, MorseDash] = MorseChar 'J'
+    f [MorseDash, MorseDot, MorseDash] = MorseChar 'K'
+    f [MorseDot, MorseDash, MorseDot, MorseDot] = MorseChar 'L'
+    f [MorseDash, MorseDash] = MorseChar 'M'
+    f [MorseDash, MorseDot] = MorseChar 'N'
+    f [MorseDash, MorseDash, MorseDash] = MorseChar 'O'
+    f [MorseDot, MorseDash, MorseDash, MorseDot] = MorseChar 'P'
+    f [MorseDash, MorseDash, MorseDot, MorseDash] = MorseChar 'Q'
+    f [MorseDot, MorseDash, MorseDot] = MorseChar 'R'
+    f [MorseDot, MorseDot, MorseDot] = MorseChar 'S'
+    f [MorseDash] = MorseChar 'T'
+    f [MorseDot, MorseDot, MorseDash] = MorseChar 'U'
+    f [MorseDot, MorseDot, MorseDot, MorseDash] = MorseChar 'V'
+    f [MorseDot, MorseDash, MorseDash] = MorseChar 'W'
+    f [MorseDash, MorseDot, MorseDot, MorseDash] = MorseChar 'X'
+    f [MorseDash, MorseDot, MorseDash, MorseDash] = MorseChar 'Y'
+    f [MorseDash, MorseDash, MorseDot, MorseDot] = MorseChar 'Z'
+
+    f [MorseDash, MorseDash, MorseDash, MorseDash, MorseDash] = MorseInt 0
+    f [MorseDot, MorseDash, MorseDash, MorseDash, MorseDash] = MorseInt 1
+    f [MorseDot, MorseDot, MorseDash, MorseDash, MorseDash] = MorseInt 2
+    f [MorseDot, MorseDot, MorseDot, MorseDash, MorseDash] = MorseInt 3
+    f [MorseDot, MorseDot, MorseDot, MorseDot, MorseDash] = MorseInt 4
+    f [MorseDot, MorseDot, MorseDot, MorseDot, MorseDot] = MorseInt 5
+    f [MorseDash, MorseDot, MorseDot, MorseDot, MorseDot] = MorseInt 6
+    f [MorseDash, MorseDash, MorseDot, MorseDot, MorseDot] = MorseInt 7
+    f [MorseDash, MorseDash, MorseDash, MorseDot, MorseDot] = MorseInt 8
+    f [MorseDash, MorseDash, MorseDash, MorseDash, MorseDot] = MorseInt 9
+    
+    f _ = MorseInvalid
