@@ -10,14 +10,20 @@ main =
     describe "Parse elementary components" $ do
       it "Parse single dot" $ do run decodeDot "." @?= Just (MorseDot, "")
       it "Parse single dash" $ do run decodeDash "-" @?= Just (MorseDash, "")
-      it "Parse space" $ do run decodeSpace " " @?= Just (MorseSpace, "")
+      it "Parse space" $ do run decodeSpace "   " @?= Just (MorseSpace, "")
     describe "Parse token" $ do
-      it "Parse token '.'" $ do run decodeToken ". " @?= Just (MorseDot, " ")
-      it "Parse token '-'" $ do run decodeToken "- " @?= Just (MorseDash, " ")
+      it "Parse token '.'" $ do run decodeToken "." @?= Just (MorseDot, "")
+      it "Parse token '.   '" $ do run decodeToken ".   " @?= Just (MorseDot, "   ")
+      it "Parse token '-'" $ do run decodeToken "-" @?= Just (MorseDash, "")
+      it "Parse token '-   '" $ do run decodeToken "-   " @?= Just (MorseDash, "   ")
 
     describe "Parse characters" $ do
       it "Parse .-" $ do
         run decodeLetter ".-" @?= Just (MorseChar 'A', "")
+      it "Parse .-   " $ do
+        run decodeLetter ".-   " @?= Just (MorseChar 'A', "")
+      it "Parse .-   .-" $ do
+        run decodeLetter ".-   .-" @?= Just (MorseChar 'A', ".-")
       it "Parse -..." $ do
         run decodeLetter "-..." @?= Just (MorseChar 'B', "")
       it "Parse -.-." $ do
@@ -88,6 +94,11 @@ main =
         run decodeLetter "---.." @?= Just (MorseInt 8, "")
       it "Parse ----." $ do
         run decodeLetter "----." @?= Just (MorseInt 9, "")
+
+    describe "Parse words" $ do
+      it "Parse .-" $ do run decodeWord ".-" @?= Just (MorseWord "A", "")
+      -- it "Parse .-   .-" $ do run decodeWord ".-   .-" @?= Just (MorseWord "AA", " ")
+      -- it "Parse .-   .-.-   .---" $ do run decodeWord ".-   .-.-   .---" @?= Just (MorseWord "ABC", " ")
     -- describe "Parse unhappy cases" $ do
     --   it "Parse invalid series of token" $ do
     --     run decodeLetter "........" @?= Just Nothing

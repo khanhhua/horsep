@@ -18,6 +18,11 @@ data MorseAlphabet
   = MorseChar Char
   | MorseInt Int
   | MorseInvalid
+  | MorseEos
+  | MorseSeparator
+  deriving (Show, Eq)
+
+newtype MorseWord = MorseWord String
   deriving (Show, Eq)
 
 newtype Parser a =
@@ -46,6 +51,7 @@ type MorseParser = Parser Morse
 
 type AlphabetParser = Parser MorseAlphabet
 
+type WordParser = Parser MorseWord
 
 decodeEof :: MorseParser
 decodeEof = Parse f
@@ -65,13 +71,13 @@ decodeDash = Parse f
   where
     f [] = Nothing
     f ('-':xs) = Just (MorseDash, xs)
-    f (_:xs) =Nothing
+    f (_:xs) = Nothing
 
 decodeSpace :: MorseParser
 decodeSpace = Parse f
   where
     f [] = Nothing
-    f (' ':xs) = Just (MorseSpace, xs)
+    f (' ':' ':' ':xs) = Just (MorseSpace, xs)
     f (_:xs) = Nothing
 
 decodeToken :: MorseParser
@@ -117,5 +123,17 @@ decodeLetter = f <$> many decodeToken <* (decodeEof <|> decodeSpace)
     f [MorseDash, MorseDash, MorseDot, MorseDot, MorseDot] = MorseInt 7
     f [MorseDash, MorseDash, MorseDash, MorseDot, MorseDot] = MorseInt 8
     f [MorseDash, MorseDash, MorseDash, MorseDash, MorseDot] = MorseInt 9
-    
+
     f _ = MorseInvalid
+
+decodeWord :: WordParser
+decodeWord = f <$> many decodeLetter <* decodeEos
+  where
+    decodeEos = MorseEos <$ decodeEof
+    -- decodeWordSep = MorseSeparator <$ decodeSpace
+    f [] = MorseWord ""
+    f chars = foldl f' (MorseWord "") chars
+    -- Where: ‘a’ is a rigid type variable bound by the inferred type of f :: [a] -> MorseWord at /Users/khanhhua/dev/horsep/app/Horsep.hs:(132,5)-(133,44)
+    f' :: MorseWord -> MorseAlphabet -> MorseWord
+    f' (MorseWord word) (MorseChar c) = MorseWord $ word ++ [c]
+    f' morseWord _ = morseWord
