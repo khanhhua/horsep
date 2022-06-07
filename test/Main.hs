@@ -18,85 +18,91 @@ main =
       it "Parse token '-   '" $ do run decodeToken "-   " @?= Just (MorseDash, "   ")
 
     describe "Parse characters" $ do
-      it "Parse .-" $ do
-        run decodeLetter ".-" @?= Just (MorseChar 'A', "")
-      it "Parse .-   " $ do
-        run decodeLetter ".-   " @?= Just (MorseChar 'A', "")
-      it "Parse .-   .-" $ do
-        run decodeLetter ".-   .-" @?= Just (MorseChar 'A', ".-")
-      it "Parse -..." $ do
-        run decodeLetter "-..." @?= Just (MorseChar 'B', "")
-      it "Parse -.-." $ do
-        run decodeLetter "-.-." @?= Just (MorseChar 'C', "")
-      it "Parse -.." $ do
-        run decodeLetter "-.." @?= Just (MorseChar 'D', "")
-      it "Parse ." $ do
-        run decodeLetter "." @?= Just (MorseChar 'E', "")
-      it "Parse ..-." $ do
-        run decodeLetter "..-." @?= Just (MorseChar 'F', "")
-      it "Parse --." $ do
-        run decodeLetter "--." @?= Just (MorseChar 'G', "")
-      it "Parse ...." $ do
-        run decodeLetter "...." @?= Just (MorseChar 'H', "")
-      it "Parse .." $ do
-        run decodeLetter ".." @?= Just (MorseChar 'I', "")
-      it "Parse .---" $ do
-        run decodeLetter ".---" @?= Just (MorseChar 'J', "")
-      it "Parse -.-" $ do
-        run decodeLetter "-.-" @?= Just (MorseChar 'K', "")
-      it "Parse .-.." $ do
-        run decodeLetter ".-.." @?= Just (MorseChar 'L', "")
-      it "Parse --" $ do
-        run decodeLetter "--" @?= Just (MorseChar 'M', "")
-      it "Parse -." $ do
-        run decodeLetter "-." @?= Just (MorseChar 'N', "")
-      it "Parse ---" $ do
-        run decodeLetter "---" @?= Just (MorseChar 'O', "")
-      it "Parse .--." $ do
-        run decodeLetter ".--." @?= Just (MorseChar 'P', "")
-      it "Parse --.-" $ do
-        run decodeLetter "--.-" @?= Just (MorseChar 'Q', "")
-      it "Parse .-." $ do
-        run decodeLetter ".-." @?= Just (MorseChar 'R', "")
-      it "Parse ..." $ do
-        run decodeLetter "..." @?= Just (MorseChar 'S', "")
-      it "Parse -" $ do
-        run decodeLetter "-" @?= Just (MorseChar 'T', "")
-      it "Parse ..-" $ do
-        run decodeLetter "..-" @?= Just (MorseChar 'U', "")
-      it "Parse ...-" $ do
-        run decodeLetter "...-" @?= Just (MorseChar 'V', "")
-      it "Parse .--" $ do
-        run decodeLetter ".--" @?= Just (MorseChar 'W', "")
-      it "Parse -..-" $ do
-        run decodeLetter "-..-" @?= Just (MorseChar 'X', "")
-      it "Parse -.--" $ do
-        run decodeLetter "-.--" @?= Just (MorseChar 'Y', "")
-      it "Parse --.." $ do
-        run decodeLetter "--.." @?= Just (MorseChar 'Z', "")
-      it "Parse -----" $ do
-        run decodeLetter "-----" @?= Just (MorseInt 0, "")
-      it "Parse .----" $ do
-        run decodeLetter ".----" @?= Just (MorseInt 1, "")
-      it "Parse ..---" $ do
-        run decodeLetter "..---" @?= Just (MorseInt 2, "")
-      it "Parse ...--" $ do
-        run decodeLetter "...--" @?= Just (MorseInt 3, "")
-      it "Parse ....-" $ do
-        run decodeLetter "....-" @?= Just (MorseInt 4, "")
-      it "Parse ....." $ do
-        run decodeLetter "....." @?= Just (MorseInt 5, "")
-      it "Parse -...." $ do
-        run decodeLetter "-...." @?= Just (MorseInt 6, "")
-      it "Parse --..." $ do
-        run decodeLetter "--..." @?= Just (MorseInt 7, "")
-      it "Parse ---.." $ do
-        run decodeLetter "---.." @?= Just (MorseInt 8, "")
-      it "Parse ----." $ do
-        run decodeLetter "----." @?= Just (MorseInt 9, "")
+      let
+        jMorseChar = Just . MorseChar
+        jMorseInt = Just . MorseInt
 
-    describe "Parse words" $ do
-      it "Parse .-" $ do run decodeWord ".-" @?= Just (MorseWord "A", "")
+      it "Parse .-" $ do
+        run decodeLetter ".-" @?= Just (jMorseChar 'A', "")
+      it "Parse .-   " $ do
+        run decodeLetter ".-   " @?= Just (jMorseChar 'A', "")
+      it "Parse .-   .-" $ do
+        run decodeLetter ".-   .-" @?= Just (jMorseChar 'A', ".-")
+      it "Parse -..." $ do
+        run decodeLetter "-..." @?= Just (jMorseChar 'B', "")
+      it "Parse -.-." $ do
+        run decodeLetter "-.-." @?= Just (jMorseChar 'C', "")
+      it "Parse -.." $ do
+        run decodeLetter "-.." @?= Just (jMorseChar 'D', "")
+      it "Parse ." $ do
+        run decodeLetter "." @?= Just (jMorseChar 'E', "")
+      it "Parse ..-." $ do
+        run decodeLetter "..-." @?= Just (jMorseChar 'F', "")
+      it "Parse --." $ do
+        run decodeLetter "--." @?= Just (jMorseChar 'G', "")
+      it "Parse ...." $ do
+        run decodeLetter "...." @?= Just (jMorseChar 'H', "")
+      it "Parse .." $ do
+        run decodeLetter ".." @?= Just (jMorseChar 'I', "")
+      it "Parse .---" $ do
+        run decodeLetter ".---" @?= Just (jMorseChar 'J', "")
+      it "Parse -.-" $ do
+        run decodeLetter "-.-" @?= Just (jMorseChar 'K', "")
+      it "Parse .-.." $ do
+        run decodeLetter ".-.." @?= Just (jMorseChar 'L', "")
+      it "Parse --" $ do
+        run decodeLetter "--" @?= Just (jMorseChar 'M', "")
+      it "Parse -." $ do
+        run decodeLetter "-." @?= Just (jMorseChar 'N', "")
+      it "Parse ---" $ do
+        run decodeLetter "---" @?= Just (jMorseChar 'O', "")
+      it "Parse .--." $ do
+        run decodeLetter ".--." @?= Just (jMorseChar 'P', "")
+      it "Parse --.-" $ do
+        run decodeLetter "--.-" @?= Just (jMorseChar 'Q', "")
+      it "Parse .-." $ do
+        run decodeLetter ".-." @?= Just (jMorseChar 'R', "")
+      it "Parse ..." $ do
+        run decodeLetter "..." @?= Just (jMorseChar 'S', "")
+      it "Parse -" $ do
+        run decodeLetter "-" @?= Just (jMorseChar 'T', "")
+      it "Parse ..-" $ do
+        run decodeLetter "..-" @?= Just (jMorseChar 'U', "")
+      it "Parse ...-" $ do
+        run decodeLetter "...-" @?= Just (jMorseChar 'V', "")
+      it "Parse .--" $ do
+        run decodeLetter ".--" @?= Just (jMorseChar 'W', "")
+      it "Parse -..-" $ do
+        run decodeLetter "-..-" @?= Just (jMorseChar 'X', "")
+      it "Parse -.--" $ do
+        run decodeLetter "-.--" @?= Just (jMorseChar 'Y', "")
+      it "Parse --.." $ do
+        run decodeLetter "--.." @?= Just (jMorseChar 'Z', "")
+      it "Parse -----" $ do
+        run decodeLetter "-----" @?= Just (jMorseInt 0, "")
+      it "Parse .----" $ do
+        run decodeLetter ".----" @?= Just (jMorseInt 1, "")
+      it "Parse ..---" $ do
+        run decodeLetter "..---" @?= Just (jMorseInt 2, "")
+      it "Parse ...--" $ do
+        run decodeLetter "...--" @?= Just (jMorseInt 3, "")
+      it "Parse ....-" $ do
+        run decodeLetter "....-" @?= Just (jMorseInt 4, "")
+      it "Parse ....." $ do
+        run decodeLetter "....." @?= Just (jMorseInt 5, "")
+      it "Parse -...." $ do
+        run decodeLetter "-...." @?= Just (jMorseInt 6, "")
+      it "Parse --..." $ do
+        run decodeLetter "--..." @?= Just (jMorseInt 7, "")
+      it "Parse ---.." $ do
+        run decodeLetter "---.." @?= Just (jMorseInt 8, "")
+      it "Parse ----." $ do
+        run decodeLetter "----." @?= Just (jMorseInt 9, "")
+      it "Parse ''" $ do
+        run decodeLetter "" @?= Just (Nothing, "")
+
+    -- describe "Parse words" $ do
+    --   it "Parse .-" $ do run decodeWord ".-" @?= Just (MorseWord "A", "")
       -- it "Parse .-   .-" $ do run decodeWord ".-   .-" @?= Just (MorseWord "AA", " ")
       -- it "Parse .-   .-.-   .---" $ do run decodeWord ".-   .-.-   .---" @?= Just (MorseWord "ABC", " ")
     -- describe "Parse unhappy cases" $ do
