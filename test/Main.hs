@@ -99,10 +99,10 @@ main =
       it "Parse ----." $ do
         run decodeLetter "----." @?= Just (jMorseInt 9, "")
       it "Parse ''" $ do
-        run decodeLetter "" @?= Just (Nothing, "")
+        run decodeLetter "" @?= Nothing
 
-    -- describe "Parse words" $ do
-    --   it "Parse .-" $ do run decodeWord ".-" @?= Just (MorseWord "A", "")
+    describe "Parse words" $ do
+      it "Parse .-" $ do run decodeWord ".-" @?= Just (MorseWord "A", "")
       -- it "Parse .-   .-" $ do run decodeWord ".-   .-" @?= Just (MorseWord "AA", " ")
       -- it "Parse .-   .-.-   .---" $ do run decodeWord ".-   .-.-   .---" @?= Just (MorseWord "ABC", " ")
     -- describe "Parse unhappy cases" $ do

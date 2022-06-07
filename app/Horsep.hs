@@ -83,7 +83,7 @@ decodeToken :: MorseParser
 decodeToken = decodeDot <|> decodeDash
 
 decodeLetter :: AlphabetParser
-decodeLetter = f <$> many decodeToken <* (decodeEof <|> decodeSpace)
+decodeLetter = f <$> some decodeToken <* (decodeEof <|> decodeSpace)
   where
     f [MorseDot, MorseDash] = Just $ MorseChar 'A'
     f [MorseDash, MorseDot, MorseDot, MorseDot] = Just $ MorseChar 'B'
@@ -126,7 +126,9 @@ decodeLetter = f <$> many decodeToken <* (decodeEof <|> decodeSpace)
     f _ = Nothing
 
 decodeWord :: Parser MorseWord
-decodeWord = f <$> some decodeLetter -- <* decodeEos
+decodeWord = f . sequence <$> some decodeLetter  -- <* decodeEos
   where
-    f [] = MorseWord ""
-    f _  = MorseWord ""
+    f Nothing = MorseWord ""
+    f (Just alphabets) = foldl f' (MorseWord "") alphabets
+    f' (MorseWord word) (MorseChar c) = MorseWord (word ++ [c])
+    f' morseWord _ = morseWord
