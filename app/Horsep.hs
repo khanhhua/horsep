@@ -16,9 +16,6 @@ data Morse
 data MorseAlphabet
   = MorseChar Char
   | MorseInt Int
-  | MorseInvalid
-  | MorseEos
-  | MorseSeparator
   deriving (Show, Eq)
 
 newtype MorseWord = MorseWord String
