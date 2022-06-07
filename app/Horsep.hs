@@ -48,7 +48,7 @@ instance Alternative Parser where
 
 type MorseParser = Parser Morse
 
-type AlphabetParser = Parser (Maybe MorseAlphabet)
+type AlphabetParser = Parser MorseAlphabet
 
 type WordParser = Parser MorseWord
 
@@ -93,51 +93,49 @@ decodeWordSep = decodeLetterSep <* decodeSilence
 decodeLetter :: AlphabetParser
 decodeLetter = f <$> some decodeToken <* (decodeLetterSep <|> decodeEof)
   where
-    f [MorseDot, MorseDash] = Just $ MorseChar 'A'
-    f [MorseDash, MorseDot, MorseDot, MorseDot] = Just $ MorseChar 'B'
-    f [MorseDash, MorseDot, MorseDash, MorseDot] = Just $ MorseChar 'C'
-    f [MorseDash, MorseDot, MorseDot] = Just $ MorseChar 'D'
-    f [MorseDot] = Just $ MorseChar 'E'
-    f [MorseDot, MorseDot, MorseDash, MorseDot] = Just $ MorseChar 'F'
-    f [MorseDash, MorseDash, MorseDot] = Just $ MorseChar 'G'
-    f [MorseDot, MorseDot, MorseDot, MorseDot] = Just $ MorseChar 'H'
-    f [MorseDot, MorseDot] = Just $ MorseChar 'I'
-    f [MorseDot, MorseDash, MorseDash, MorseDash] = Just $ MorseChar 'J'
-    f [MorseDash, MorseDot, MorseDash] = Just $ MorseChar 'K'
-    f [MorseDot, MorseDash, MorseDot, MorseDot] = Just $ MorseChar 'L'
-    f [MorseDash, MorseDash] = Just $ MorseChar 'M'
-    f [MorseDash, MorseDot] = Just $ MorseChar 'N'
-    f [MorseDash, MorseDash, MorseDash] = Just $ MorseChar 'O'
-    f [MorseDot, MorseDash, MorseDash, MorseDot] = Just $ MorseChar 'P'
-    f [MorseDash, MorseDash, MorseDot, MorseDash] = Just $ MorseChar 'Q'
-    f [MorseDot, MorseDash, MorseDot] = Just $ MorseChar 'R'
-    f [MorseDot, MorseDot, MorseDot] = Just $ MorseChar 'S'
-    f [MorseDash] = Just $ MorseChar 'T'
-    f [MorseDot, MorseDot, MorseDash] = Just $ MorseChar 'U'
-    f [MorseDot, MorseDot, MorseDot, MorseDash] = Just $ MorseChar 'V'
-    f [MorseDot, MorseDash, MorseDash] = Just $ MorseChar 'W'
-    f [MorseDash, MorseDot, MorseDot, MorseDash] = Just $ MorseChar 'X'
-    f [MorseDash, MorseDot, MorseDash, MorseDash] = Just $ MorseChar 'Y'
-    f [MorseDash, MorseDash, MorseDot, MorseDot] = Just $ MorseChar 'Z'
+    f [MorseDot, MorseDash] = MorseChar 'A'
+    f [MorseDash, MorseDot, MorseDot, MorseDot] = MorseChar 'B'
+    f [MorseDash, MorseDot, MorseDash, MorseDot] = MorseChar 'C'
+    f [MorseDash, MorseDot, MorseDot] = MorseChar 'D'
+    f [MorseDot] = MorseChar 'E'
+    f [MorseDot, MorseDot, MorseDash, MorseDot] = MorseChar 'F'
+    f [MorseDash, MorseDash, MorseDot] = MorseChar 'G'
+    f [MorseDot, MorseDot, MorseDot, MorseDot] = MorseChar 'H'
+    f [MorseDot, MorseDot] = MorseChar 'I'
+    f [MorseDot, MorseDash, MorseDash, MorseDash] = MorseChar 'J'
+    f [MorseDash, MorseDot, MorseDash] = MorseChar 'K'
+    f [MorseDot, MorseDash, MorseDot, MorseDot] = MorseChar 'L'
+    f [MorseDash, MorseDash] = MorseChar 'M'
+    f [MorseDash, MorseDot] = MorseChar 'N'
+    f [MorseDash, MorseDash, MorseDash] = MorseChar 'O'
+    f [MorseDot, MorseDash, MorseDash, MorseDot] = MorseChar 'P'
+    f [MorseDash, MorseDash, MorseDot, MorseDash] = MorseChar 'Q'
+    f [MorseDot, MorseDash, MorseDot] = MorseChar 'R'
+    f [MorseDot, MorseDot, MorseDot] = MorseChar 'S'
+    f [MorseDash] = MorseChar 'T'
+    f [MorseDot, MorseDot, MorseDash] = MorseChar 'U'
+    f [MorseDot, MorseDot, MorseDot, MorseDash] = MorseChar 'V'
+    f [MorseDot, MorseDash, MorseDash] = MorseChar 'W'
+    f [MorseDash, MorseDot, MorseDot, MorseDash] = MorseChar 'X'
+    f [MorseDash, MorseDot, MorseDash, MorseDash] = MorseChar 'Y'
+    f [MorseDash, MorseDash, MorseDot, MorseDot] = MorseChar 'Z'
 
-    f [MorseDash, MorseDash, MorseDash, MorseDash, MorseDash] = Just $ MorseInt 0
-    f [MorseDot, MorseDash, MorseDash, MorseDash, MorseDash] = Just $ MorseInt 1
-    f [MorseDot, MorseDot, MorseDash, MorseDash, MorseDash] = Just $ MorseInt 2
-    f [MorseDot, MorseDot, MorseDot, MorseDash, MorseDash] = Just $ MorseInt 3
-    f [MorseDot, MorseDot, MorseDot, MorseDot, MorseDash] = Just $ MorseInt 4
-    f [MorseDot, MorseDot, MorseDot, MorseDot, MorseDot] = Just $ MorseInt 5
-    f [MorseDash, MorseDot, MorseDot, MorseDot, MorseDot] = Just $ MorseInt 6
-    f [MorseDash, MorseDash, MorseDot, MorseDot, MorseDot] = Just $ MorseInt 7
-    f [MorseDash, MorseDash, MorseDash, MorseDot, MorseDot] = Just $ MorseInt 8
-    f [MorseDash, MorseDash, MorseDash, MorseDash, MorseDot] = Just $ MorseInt 9
+    f [MorseDash, MorseDash, MorseDash, MorseDash, MorseDash] = MorseInt 0
+    f [MorseDot, MorseDash, MorseDash, MorseDash, MorseDash] = MorseInt 1
+    f [MorseDot, MorseDot, MorseDash, MorseDash, MorseDash] = MorseInt 2
+    f [MorseDot, MorseDot, MorseDot, MorseDash, MorseDash] = MorseInt 3
+    f [MorseDot, MorseDot, MorseDot, MorseDot, MorseDash] = MorseInt 4
+    f [MorseDot, MorseDot, MorseDot, MorseDot, MorseDot] = MorseInt 5
+    f [MorseDash, MorseDot, MorseDot, MorseDot, MorseDot] = MorseInt 6
+    f [MorseDash, MorseDash, MorseDot, MorseDot, MorseDot] = MorseInt 7
+    f [MorseDash, MorseDash, MorseDash, MorseDot, MorseDot] = MorseInt 8
+    f [MorseDash, MorseDash, MorseDash, MorseDash, MorseDot] = MorseInt 9
 
-    f _ = Nothing
 
 decodeWord :: Parser MorseWord
-decodeWord = f . sequence <$> some decodeLetter <* (decodeWordSep <|> decodeEof)
+decodeWord = f <$> some decodeLetter <* (decodeWordSep <|> decodeEof)
   where
-    f Nothing = MorseWord ""
-    f (Just alphabets) = foldl f' (MorseWord "") alphabets
+    f = foldl f' (MorseWord "")
     f' (MorseWord word) (MorseChar c) = MorseWord (word ++ [c])
     f' morseWord _ = morseWord
 
