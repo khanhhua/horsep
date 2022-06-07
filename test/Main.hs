@@ -19,8 +19,8 @@ main =
 
     describe "Parse characters" $ do
       let
-        jMorseChar = Just . MorseChar
-        jMorseInt = Just . MorseInt
+        jMorseChar = MorseChar
+        jMorseInt = MorseInt
 
       -- it "Parse three silence into one nothing" $ do
       --   run decodeLetter "   " @?= Just (Nothing, "")
