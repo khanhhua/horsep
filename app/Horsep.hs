@@ -87,17 +87,11 @@ decodeLetterSep :: MorseParser
 decodeLetterSep = decodeSilence <* decodeSilence <* decodeSilence
 
 decodeWordSep :: MorseParser
-decodeWordSep = decodeSilence 
-                <* decodeSilence
-                <* decodeSilence
-                <* decodeSilence
-                -- <* decodeSilence
-                -- <* decodeSilence
-                -- <* decodeSilence
+decodeWordSep = decodeLetterSep <* decodeSilence
 
 
 decodeLetter :: AlphabetParser
-decodeLetter = f <$> some decodeToken <* (decodeEof <|> decodeLetterSep)
+decodeLetter = f <$> some decodeToken <* (decodeLetterSep <|> decodeEof)
   where
     f [MorseDot, MorseDash] = Just $ MorseChar 'A'
     f [MorseDash, MorseDot, MorseDot, MorseDot] = Just $ MorseChar 'B'
@@ -153,7 +147,7 @@ decode = some decodeWord
 
 
 runT :: String -> String
-runT input = f $ run decode input
+runT = f . run decode
   where
     f Nothing = ""
     f (Just (words, _)) = unwords $ map (\(MorseWord w) -> w) words
