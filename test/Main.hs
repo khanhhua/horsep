@@ -10,7 +10,7 @@ main =
     describe "Parse elementary components" $ do
       it "Parse single dot" $ do run decodeDot "." @?= Just (MorseDot, "")
       it "Parse single dash" $ do run decodeDash "-" @?= Just (MorseDash, "")
-      it "Parse space" $ do run decodeSpace "   " @?= Just (MorseSpace, "")
+      it "Parse space" $ do run decodeSilence " " @?= Just (MorseSilence, "")
     describe "Parse token" $ do
       it "Parse token '.'" $ do run decodeToken "." @?= Just (MorseDot, "")
       it "Parse token '.   '" $ do run decodeToken ".   " @?= Just (MorseDot, "   ")
@@ -22,6 +22,8 @@ main =
         jMorseChar = Just . MorseChar
         jMorseInt = Just . MorseInt
 
+      -- it "Parse three silence into one nothing" $ do
+      --   run decodeLetter "   " @?= Just (Nothing, "")
       it "Parse .-" $ do
         run decodeLetter ".-" @?= Just (jMorseChar 'A', "")
       it "Parse .-   " $ do
@@ -103,8 +105,14 @@ main =
 
     describe "Parse words" $ do
       it "Parse .-" $ do run decodeWord ".-" @?= Just (MorseWord "A", "")
-      -- it "Parse .-   .-" $ do run decodeWord ".-   .-" @?= Just (MorseWord "AA", " ")
-      -- it "Parse .-   .-.-   .---" $ do run decodeWord ".-   .-.-   .---" @?= Just (MorseWord "ABC", " ")
+      it "Parse .-   .-" $ do run decodeWord ".-   .-" @?= Just (MorseWord "AA", "")
+      it "Parse .-   -...   -.-." $ do run decodeWord ".-   -...   -.-." @?= Just (MorseWord "ABC", "")
+    
+    describe "Parse sentence" $ do
+      it "Parse ....   ..       .-   -...   -.-." $ do run decode "....   ..       .-   -...   -.-." @?= Just ([MorseWord "HI", MorseWord "ABC"], "")
+    
+    describe "Decode sentence to string" $ do
+      it "Parse ....   ..       .-   -...   -.-." $ do runT "....   ..       .-   -...   -.-." @?= "HI ABC"
     -- describe "Parse unhappy cases" $ do
     --   it "Parse invalid series of token" $ do
     --     run decodeLetter "........" @?= Just Nothing

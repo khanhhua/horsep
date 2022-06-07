@@ -9,7 +9,7 @@ import Control.Applicative
 data Morse
   = MorseDot
   | MorseDash
-  | MorseSpace
+  | MorseSilence
   | MorseEof
   deriving (Show, Eq)
 
@@ -72,18 +72,32 @@ decodeDash = Parse f
     f ('-':xs) = Just (MorseDash, xs)
     f (_:xs) = Nothing
 
-decodeSpace :: MorseParser
-decodeSpace = Parse f
+decodeSilence :: MorseParser
+decodeSilence = Parse f
   where
     f [] = Nothing
-    f (' ':' ':' ':xs) = Just (MorseSpace, xs)
+    f (' ':xs) = Just (MorseSilence, xs)
     f (_:xs) = Nothing
 
 decodeToken :: MorseParser
 decodeToken = decodeDot <|> decodeDash
 
+-- Three silence become a MorseSepator
+decodeLetterSep :: MorseParser
+decodeLetterSep = decodeSilence <* decodeSilence <* decodeSilence
+
+decodeWordSep :: MorseParser
+decodeWordSep = decodeSilence 
+                <* decodeSilence
+                <* decodeSilence
+                <* decodeSilence
+                -- <* decodeSilence
+                -- <* decodeSilence
+                -- <* decodeSilence
+
+
 decodeLetter :: AlphabetParser
-decodeLetter = f <$> some decodeToken <* (decodeEof <|> decodeSpace)
+decodeLetter = f <$> some decodeToken <* (decodeEof <|> decodeLetterSep)
   where
     f [MorseDot, MorseDash] = Just $ MorseChar 'A'
     f [MorseDash, MorseDot, MorseDot, MorseDot] = Just $ MorseChar 'B'
@@ -126,9 +140,20 @@ decodeLetter = f <$> some decodeToken <* (decodeEof <|> decodeSpace)
     f _ = Nothing
 
 decodeWord :: Parser MorseWord
-decodeWord = f . sequence <$> some decodeLetter  -- <* decodeEos
+decodeWord = f . sequence <$> some decodeLetter <* (decodeWordSep <|> decodeEof)
   where
     f Nothing = MorseWord ""
     f (Just alphabets) = foldl f' (MorseWord "") alphabets
     f' (MorseWord word) (MorseChar c) = MorseWord (word ++ [c])
     f' morseWord _ = morseWord
+
+
+decode :: Parser [MorseWord]
+decode = some decodeWord
+
+
+runT :: String -> String
+runT input = f $ run decode input
+  where
+    f Nothing = ""
+    f (Just (words, _)) = unwords $ map (\(MorseWord w) -> w) words
